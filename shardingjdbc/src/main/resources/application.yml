@@ -1,0 +1,79 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  shardingsphere:
+    datasource:
+      ds1:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        password: root
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://localhost:3306/sharding?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false&zeroDateTimeBehavior=convertToNull
+        username: root
+      ds2:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        password: root
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://localhost:3307/sharding2?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false&zeroDateTimeBehavior=convertToNull
+        username: root
+      names: ds1,ds2
+    sharding:
+      # \u5206\u8868\u7B56\u7565
+      tables:
+        order:
+          # \u914D\u7F6E\u6570\u636E\u8282\u70B9\uFF0C\u5C31\u662F\u90FD\u6709\u54EA\u4E9B\u8868
+          actual-data-nodes: ds$->{1..2}.order_20200$->{3..5}
+          #\u4E3B\u4EF6\u751F\u6210\u7B56\u7565
+          key-generator:
+            column: order_id
+            #\u81EA\u589E\u5217\u503C\u751F\u6210\u5668\u7C7B\u578B\uFF0C\u7F3A\u7701\u8868\u793A\u4F7F\u7528\u9ED8\u8BA4\u81EA\u589E\u5217\u503C\u751F\u6210\u5668\u3002\u53EF\u4F7F\u7528\u7528\u6237\u81EA\u5B9A\u4E49\u7684\u5217\u503C\u751F\u6210\u5668\u6216\u9009\u62E9\u5185\u7F6E\u7C7B\u578B\uFF1ASNOWFLAKE/UUID
+            type: SNOWFLAKE
+          #\u6C34\u5E73\u5206\u8868\u7B56\u7565\uFF08\u6309\u7167\u521B\u5EFA\u65F6\u95F4\u6C34\u5E73\u5206\u8868\uFF09
+          table-strategy:
+            inline:
+              sharding-column: create_time
+              #\u5206\u7247\u7B97\u6CD5\u884C\u8868\u8FBE\u5F0F\uFF0C\u9700\u7B26\u5408groovy\u8BED\u6CD5
+              algorithm-expression: order_$->{create_time.toString().substring(0, 4)}$->{create_time.toString().substring(5, 7)}
+          #\u6C34\u5E73\u5206\u5E93\u7B56\u7565\uFF08status\u4E3A0\u653E1\u5E93\uFF0C\u4E3A1\u653E2\u5E93\uFF09
+          database-strategy:
+            inline:
+              sharding-column: status
+              algorithm-expression: ds$->{status % 2+1}
+#      # \u516C\u5171\u8868\uFF1A\u589E\u5220\u67E5\u6539\u6570\u636E\u5230\u6240\u6709\u5E93
+#      broadcast-tables: dict
+      # \u5782\u76F4\u5206\u5E93 \uFF1A\u4E0D\u540C\u4E1A\u52A1\u653E\u4E0D\u540C\u5E93
+    #        user:
+#          actual-data-nodes: ds3
+#          table-strategy:
+#            inline:
+#              sharding-column: user_id
+#            #\u5206\u7247\u7B97\u6CD5\u884C\u8868\u8FBE\u5F0F\uFF0C\u9700\u7B26\u5408groovy\u8BED\u6CD5
+#            algorithm-expression: user
+    #\u6253\u5370shardingjdbc\u65E5\u5FD7
+    props:
+      sql.show: true
+# mybatis-plus\u76F8\u5173\u914D\u7F6E
+mybatis-plus:
+  # xml\u626B\u63CF\uFF0C\u591A\u4E2A\u76EE\u5F55\u7528\u9017\u53F7\u6216\u8005\u5206\u53F7\u5206\u9694\uFF08\u544A\u8BC9 Mapper \u6240\u5BF9\u5E94\u7684 XML \u6587\u4EF6\u4F4D\u7F6E\uFF09
+  #  mapper-locations: classpath:mapper/*.xml
+  # \u4EE5\u4E0B\u914D\u7F6E\u5747\u6709\u9ED8\u8BA4\u503C,\u53EF\u4EE5\u4E0D\u8BBE\u7F6E
+  global-config:
+    db-config:
+      #\u4E3B\u952E\u7C7B\u578B AUTO:"\u6570\u636E\u5E93ID\u81EA\u589E" INPUT:"\u7528\u6237\u8F93\u5165ID",ID_WORKER:"\u5168\u5C40\u552F\u4E00ID (\u6570\u5B57\u7C7B\u578B\u552F\u4E00ID)", UUID:"\u5168\u5C40\u552F\u4E00ID UUID";
+      id-type: auto
+      #\u5B57\u6BB5\u7B56\u7565 IGNORED:"\u5FFD\u7565\u5224\u65AD"  NOT_NULL:"\u975E NULL \u5224\u65AD")  NOT_EMPTY:"\u975E\u7A7A\u5224\u65AD"
+      field-strategy: NOT_EMPTY
+      #\u6570\u636E\u5E93\u7C7B\u578B
+      db-type: MYSQL
+  configuration:
+    # \u662F\u5426\u5F00\u542F\u81EA\u52A8\u9A7C\u5CF0\u547D\u540D\u89C4\u5219\u6620\u5C04:\u4ECE\u6570\u636E\u5E93\u5217\u540D\u5230Java\u5C5E\u6027\u9A7C\u5CF0\u547D\u540D\u7684\u7C7B\u4F3C\u6620\u5C04
+    map-underscore-to-camel-case: true
+    # \u5982\u679C\u67E5\u8BE2\u7ED3\u679C\u4E2D\u5305\u542B\u7A7A\u503C\u7684\u5217\uFF0C\u5219 MyBatis \u5728\u6620\u5C04\u7684\u65F6\u5019\uFF0C\u4E0D\u4F1A\u6620\u5C04\u8FD9\u4E2A\u5B57\u6BB5
+    call-setters-on-nulls: true
+    # \u8FD9\u4E2A\u914D\u7F6E\u4F1A\u5C06\u6267\u884C\u7684sql\u6253\u5370\u51FA\u6765\uFF0C\u5728\u5F00\u53D1\u6216\u6D4B\u8BD5\u7684\u65F6\u5019\u53EF\u4EE5\u7528
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+logging:
+  level:
+    com.itheima.dbsharding: debug
+    org.springframework.web: info
+    druid.sql: debug
+    root: info

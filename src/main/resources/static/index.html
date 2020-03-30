@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+</head>
+
+
+<body>
+这是一个测试页面，我一打开就会去连接后台的webSocketServer
+</body>
+<script language="javascript" type="text/javascript">
+    var ws = new WebSocket("ws://localhost:8080/websocket");//后台WebSocketServer地址
+    var uid = Math.floor(Math.random() * 10);//用户id
+
+
+    //客户端打开WebSocket连接时触发
+    ws.onopen = function (event) {
+        //一打开WebSocket连接就调用socket.send(message)发送消息给服务器
+        //这里的用户id是一些随机数
+        ws.send("我是用户"+uid);
+        document.write("<td>"+"我连接后台的WebSocket服务端成功了，我可以和服务端相互通讯了，我发了我当前的用户id:"+uid+"给后台"+"</td><br>");
+    };
+
+    //客户端接收服务端数据时触发
+    ws.onmessage = function (event) {
+        //比如一些业务处理，或者再调用socket.send(message)发消息回复
+        var received_msg = event.data;
+        document.write("<td>"+"我收到了后台发来的消息:"+received_msg+"</td><br>");
+
+    };
+
+    //客户端接收服务端错误时触发
+    ws.onerror = function (event) {
+        //比如打印错误 console.error('socket error:', event)
+    };
+    //连接关闭时触发
+    ws.onclose = function (event) {
+        document.write("<td>"+"当前WebSocket连接已经关闭"+"</td><br>");
+    };
+
+    window.addEventListener("loadWebSocket", init, false);
+</script>
+</html>
