@@ -18,13 +18,4 @@ public class AreaImpl extends ServiceImpl<AreaMapper, Area> implements AreaServi
     public IPage selectPage(Page page) {
         return baseMapper.selectPage(page, null);
     }
-
-    public void test() {
-        Area area = baseMapper.selectOne(
-                Wrappers.<Area>lambdaQuery().eq(
-                        Area::getAreaCode,
-                        "123456")
-        );
-    }
-
 }

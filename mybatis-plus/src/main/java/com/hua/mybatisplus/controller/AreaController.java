@@ -1,6 +1,7 @@
 package com.hua.mybatisplus.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hua.mybatisplus.pojo.Area;
 import com.hua.mybatisplus.service.AreaService;
@@ -20,7 +21,10 @@ public class AreaController {
     private AreaService areaService;
 
     @GetMapping("/page")
-    public IPage<Area> findUserList(Page<Area> page) {
+    public IPage<Area> findUserList(Page<Area> page,Area areaCond) {
+        areaService.page(page,  Wrappers.<Area>lambdaQuery().eq(
+                Area::getAreaCode,
+                areaCond.getAreaCode()));
         return areaService.page(page);
     }
 
