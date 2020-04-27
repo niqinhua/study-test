@@ -26,4 +26,8 @@ public class UserService {
         PageInfo<User> pageInfoUser = new PageInfo<User>(listUser);
         return pageInfoUser;
     }
+
+    public int addUser(User user){
+        return userMapper.insertSelective(user);
+    }
 }

@@ -16,8 +16,9 @@ public class User {
     @Id
     @KeySql(useGeneratedKeys = true)
     Integer id;
-
     String name;
-
     Integer age;
+
+    String tel;
+    int sex;
 }

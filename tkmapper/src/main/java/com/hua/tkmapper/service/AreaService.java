@@ -26,4 +26,6 @@ public class AreaService {
         PageInfo<Area> pageInfoUser = new PageInfo<Area>(listUser);
         return pageInfoUser;
     }
+
+
 }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hua.mybatisplus.dao.AreaMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.hua.mybatisplus.entity.Area" autoMapping="true">
+        <id column="id" property="id" />
+        <collection property="users" ofType= "com.hua.mybatisplus.entity.User" columnPrefix="user_" autoMapping="true">
+        </collection>
+
+    </resultMap>
+
+    <select id="selectByLevel" resultType="com.hua.mybatisplus.entity.Area">
+        select *
+        from area
+        where level = #{level}
+    </select>
+
+    <select id="selectAll" resultType="com.hua.mybatisplus.entity.Area">
+        select *
+        from area
+    </select>
+
+    <!--,u.id as user_id,u.name as user_name,u.area_id as user_area_id-->
+    <select id="selectWithUser" resultMap="BaseResultMap">
+        select area.* ,u.id as user_id,u.name as user_name,u.area_id as user_area_id
+        from area
+        left join user as u
+        on  u.area_id = area.id
+    </select>
+
+
+
+    <select id="selectByIds" resultMap="BaseResultMap">
+        select *
+        from area
+        <where>
+            <if test="ids != null and ids.size() >0 ">
+                 id IN
+                <foreach item="item" index="index" collection="ids" open="("  close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+</mapper>

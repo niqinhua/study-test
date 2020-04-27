@@ -2,8 +2,12 @@ package com.hua.mybatisplus.dao;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.hua.mybatisplus.pojo.Area;
+import com.hua.mybatisplus.entity.Area;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author 倪勤华
@@ -12,4 +16,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AreaMapper extends BaseMapper<Area> {
 
+    Area selectByLevel (Integer level);
+    List<Area> selectAll ();
+    List<Area> selectWithUser();
+
+    List<Area> selectByIds(@Param("ids") List<Long> ids);
 }

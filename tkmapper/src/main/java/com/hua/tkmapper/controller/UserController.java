@@ -5,6 +5,7 @@ import com.hua.tkmapper.pojo.User;
 import com.hua.tkmapper.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,5 +22,10 @@ public class UserController {
     @GetMapping("/page")
     public PageInfo<User> findUserList(int page, int size) {
         return userService.findUserList(page, size);
+    }
+
+    @PostMapping
+    public int add(User user){
+        return userService. addUser(user);
     }
 }

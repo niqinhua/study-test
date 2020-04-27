@@ -6,7 +6,6 @@ import javax.persistence.Id;
 import java.io.Serializable;
 
 @Data
-//@Table
 public class Area implements Serializable {
 
     @Id
